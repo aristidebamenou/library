@@ -26,7 +26,9 @@ addbutton.addEventListener('click', function() {
     addbutton.style.display = 'none'
 });
 
-document.querySelector(".form").addEventListener('submit', function(){
+let bookform = document.querySelector(".form");
+
+bookform.addEventListener('submit', function(){
     
     alert('Hello')
 })

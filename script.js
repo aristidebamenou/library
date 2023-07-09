@@ -23,6 +23,7 @@ addbutton.addEventListener('click', function() {
     console.log("work");
     let addForm = document.getElementById("form");
     addForm.style.display = 'block';
+    addbutton.style.display = 'none'
 });
 
 document.querySelector(".form").addEventListener('submit', function(){

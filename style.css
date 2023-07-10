@@ -10,7 +10,7 @@ body{
 }
 
 .left{
-    display: block;
+    display: none;
     margin-top: 50px;
     border-radius: 12px;
     background-color: #15172b;

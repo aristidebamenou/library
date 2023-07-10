@@ -9,19 +9,19 @@ function Book(title, author, pages, isread) {
 }
 
 function addMyBook() {
-    let title = document.getElementById("Title").value;
-    let author = document.getElementById("Author").value;
-    let pages = document.getElementById("Pages").value;
-    let isread = document.getElementById("isread").checked;
+    let title = document.querySelector(".Title").value;
+    let author = document.querySelector(".Author").value;
+    let pages = document.querySelector(".Pages").value;
+    let isread = document.querySelector(".isread").checked;
     let bookAdded = Book(title, author, pages, isread);
   
 }    
 
-let addbutton = document.getElementById("addBook");
+let addbutton = document.querySelector("#addBook");
 
 addbutton.addEventListener('click', function() {
     console.log("work");
-    let addForm = document.getElementById("form");
+    let addForm = document.querySelector(".form");
     addForm.style.display = 'block';
     addbutton.style.display = 'none'
 });
@@ -30,5 +30,4 @@ let bookform = document.querySelector(".form");
 
 bookform.addEventListener('submit', function(){
     
-    alert('Hello')
 })

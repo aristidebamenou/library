@@ -23,7 +23,7 @@ body{
 .right{
     background-color: #3e4059;
 }
-.addBook {
+#addBook {
     position: absolute;
     top: 350px;
     left: 680px;
@@ -38,12 +38,12 @@ body{
     border: 1px solid black;
   }
   
-  .addBook:hover {
+  #addBook:hover {
     transform: translateY(-4px) translateX(-2px);
     box-shadow: 2px 5px 0 0 black;
   };
   
-  .addBook:active {
+  #addBook:active {
     transform: translateY(2px) translateX(1px);
     box-shadow: 0 0 0 0 black;
   };

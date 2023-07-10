@@ -21,7 +21,7 @@ let addbutton = document.querySelector("#addBook");
 
 addbutton.addEventListener('click', function() {
     console.log("work");
-    let addForm = document.querySelector(".form");
+    let addForm = document.querySelector(".left");
     addForm.style.display = 'block';
     addbutton.style.display = 'none'
 });

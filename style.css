@@ -1,8 +1,11 @@
 body{
     margin: 0;
     background-color: #3e4059;
+    
 
 }
+
+
 .nav{
     background-color: rgb(30, 91, 91);
     height: 90px;
@@ -11,19 +14,19 @@ body{
 
 .left{
     display: none;
-    margin-top: 50px;
+
     border-radius: 12px;
     background-color: #15172b;
     top: 0px;
     width: 300px;
-    height: 1000px;
+    height: 750px;
     
 }
 
 .right{
     background-color: #3e4059;
 }
-#addBook {
+.addBook {
     position: absolute;
     top: 350px;
     left: 680px;
@@ -38,12 +41,12 @@ body{
     border: 1px solid black;
   }
   
-  #addBook:hover {
+  .addBook:hover {
     transform: translateY(-4px) translateX(-2px);
     box-shadow: 2px 5px 0 0 black;
   };
   
-  #addBook:active {
+  .addBook:active {
     transform: translateY(2px) translateX(1px);
     box-shadow: 0 0 0 0 black;
   };
@@ -105,7 +108,7 @@ body{
     color: #808097;
   }
   
-  .input {
+  .input1 {
     background-color: #303245;
     border-radius: 12px;
     border: 0;
@@ -116,6 +119,31 @@ body{
     outline: 0;
     width: 100%;
   }
+  
+  .input2 {
+    background-color: #303245;
+    border-radius: 12px;
+    border: 0;
+    box-sizing: border-box;
+    color: #eee;
+    font-size: 18px;
+    height: 100%;
+    outline: 0;
+    width: 100%;
+  }
+
+  .input3 {
+    background-color: #303245;
+    border-radius: 12px;
+    border: 0;
+    box-sizing: border-box;
+    color: #eee;
+    font-size: 18px;
+    height: 100%;
+    outline: 0;
+    width: 100%;
+  }
+  
   
  
 
@@ -136,4 +164,12 @@ body{
   
   .submit:active {
     background-color: #06b;
+  }
+
+  .lib{
+    position:absolute;
+    top:0px;
+    bottom: 750px;
+    left: 300px
+    
   }

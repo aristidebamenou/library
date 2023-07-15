@@ -8,6 +8,37 @@ function Book(title, author, pages, isread) {
   
 }
 
+function addMyBook() {
+    let title = document.querySelector(".input1").value;
+    let author = document.querySelector(".input2").value;
+    let pages = document.querySelector(".input3").value;
+    let isread = document.querySelector("#isread").checked;
+    let bookAdded = new Book(title, author, pages, isread);
+    console.log(bookAdded);
+    myLibrary.push(bookAdded);
+    libpane();
+  
+}    
+
+
+
+let addbutton = document.querySelector(".addBook");
+
+addbutton.addEventListener('click', function() {
+    let addForm = document.querySelector(".left");
+    addForm.style.display = 'block';
+    addbutton.style.display = 'none'
+});
+
+let bookform = document.querySelector(".form");
+
+bookform.addEventListener('submit', function(){
+
+event.preventDefault();
+addMyBook();
+    
+});
+
 function libpane() {
     let libItem = document.querySelector(".lib");
     libItem.innerHTML = "";
@@ -35,31 +66,4 @@ function deleteBook(index){
     libpane();
 }
 
-function addMyBook() {
-    let title = document.querySelector(".input1").value;
-    let author = document.querySelector(".input2").value;
-    let pages = document.querySelector(".input3").value;
-    let isread = document.querySelector("#isread").checked;
-    let bookAdded = new Book(title, author, pages, isread);
-    console.log(bookAdded);
-    myLibrary.push(bookAdded);
-    libpane();
-  
-}    
 
-let addbutton = document.querySelector(".addBook");
-
-addbutton.addEventListener('click', function() {
-    let addForm = document.querySelector(".left");
-    addForm.style.display = 'block';
-    addbutton.style.display = 'none'
-});
-
-let bookform = document.querySelector(".form");
-
-bookform.addEventListener('submit', function(){
-
-event.preventDefault();
-addMyBook();
-    
-});

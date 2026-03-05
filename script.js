@@ -7,6 +7,10 @@ function Book(title, author, numberOfPages, read) {
     this.numberOfPages = numberOfPages;
     this.read = read;
 
+    this.toggleRead = function() {
+        this.read = !this.read;
+    }
+
     this.display = function() {
         let libraryMain = document.getElementById("library");
 
@@ -32,16 +36,28 @@ function Book(title, author, numberOfPages, read) {
         bookCardText.innerText = `${this.numberOfPages} pages`;
 
         let bookCardFooter = document.createElement("div");
-        bookCardFooter.className = "card-footer text-body-secondary text-end";
+        bookCardFooter.className = "card-footer text-body-secondary d-flex justify-content-between";
+
+        let readButton = document.createElement("button");
+        readButton.dataset.id = this.id;
+        readButton.className = "btn readBookButton";
+
+        let deleteButton = document.createElement("button");
+        deleteButton.innerText = "Remove";
+        deleteButton.dataset.id = this.id;
+        deleteButton.className = "btn btn-outline-danger removeBookButton";
+
+        bookCardFooter.appendChild(readButton);
+        bookCardFooter.appendChild(deleteButton);
 
         if(this.read) {
             bookCard.className = `${bookCard.className} border-primary`;
-            bookCardFooter.className = `${bookCardFooter.className} text-bg-primary`;
-            bookCardFooter.innerText = "Read"
+            readButton.className = `${readButton.className} btn-outline-primary`;
+            readButton.innerText = "Read"
         } else {
             bookCard.className = `${bookCard.className} border-secondary`;
-            bookCardFooter.className = `${bookCardFooter.className} text-bg-secondary`;
-            bookCardFooter.innerText = "Not read yet"
+            readButton.className = `${readButton.className} btn-outline-secondary`;
+            readButton.innerText = "Not read yet"
         }
 
         bookCardBody.appendChild(bookCardTitle);
@@ -57,6 +73,12 @@ function Book(title, author, numberOfPages, read) {
 function Library() {
     this.books = [];
 
+    this.initialize = function() {
+        for (let i = 0; i < 8; i++) {
+            this.addBook(faker.book.title(), faker.book.author(), Math.floor(Math.random() * 800), Math.random() < 0.5)
+        }
+    }
+
     this.display = function() {
         for (let i = 0; i < this.books.length; i++) {
             this.books[i].display();
@@ -68,16 +90,35 @@ function Library() {
         this.books.push(book);
     }
 
+    this.findBookIndex = function(bookId) {
+        return this.books.findIndex(book => book.id === bookId);
+    }
+
     this.refresh = function() {
+
         let libraryMain = document.getElementById("library");
         libraryMain.innerHTML = "";
         this.display();
     }
 
-    this.initialize = function() {
-        for (let i = 0; i < 3; i++) {
-            this.addBook(faker.book.title(), faker.book.author(), Math.floor(Math.random() * 800), Math.random() < 0.5)
-        }
+    this.deleteBook = function() {
+        document.addEventListener("click", (e) => {
+            if(!e.target.classList.contains("removeBookButton")) {
+                return;
+            }
+            this.books.splice(this.findBookIndex(e.target.dataset.id), 1);
+            this.refresh();
+        });
+    }
+
+    this.toggleBookRead = function() {
+        document.addEventListener("click", (e) => {
+            if(!e.target.classList.contains("readBookButton")) {
+                return;
+            }
+            this.books[this.findBookIndex(e.target.dataset.id)].toggleRead();
+            this.refresh();
+        });
     }
 }
 
@@ -93,22 +134,27 @@ function cleanFormInputs() {
     readInput.checked = false;
 }
 
-let myLibrary = new Library();
+document.addEventListener('DOMContentLoaded', () => {
+    let myLibrary = new Library();
 
-let newBookFormClose = document.getElementById("newBookFormClose");
-let newBookForm = document.getElementById("newBookForm");
+    let newBookFormClose = document.getElementById("newBookFormClose");
+    let newBookForm = document.getElementById("newBookForm");
 
-myLibrary.initialize();
-myLibrary.refresh();
-
-newBookForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-    let data = new FormData(newBookForm);
-
-    myLibrary.addBook(data.get('title'), data.get('author'), data.get('numberOfPages'), data.get('read') === 'on');
-    newBookFormClose.click();
+    myLibrary.initialize();
     myLibrary.refresh();
-    cleanFormInputs();
-})
+    myLibrary.deleteBook();
+    myLibrary.toggleBookRead();
+
+    newBookForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        let data = new FormData(newBookForm);
+
+        myLibrary.addBook(data.get('title'), data.get('author'), data.get('numberOfPages'), data.get('read') === 'on');
+        newBookFormClose.click();
+        myLibrary.refresh();
+        cleanFormInputs();
+    });
+});
+
 
 

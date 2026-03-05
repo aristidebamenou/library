@@ -12,9 +12,43 @@
             <h1>Library</h1>
         </div>
         <div class="col-md-2 text-end">
-            <button type="button" class="btn btn-outline-primary">New book</button>
+            <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#bookForm">New book</button>
         </div>
     </header>
+    <div class="modal fade row" id="bookForm">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">New book</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" id="newBookFormClose"></button>
+                </div>
+
+                <div class="modal-body">
+                    <form id="newBookForm">
+                        <div class="mb-3 mt-3">
+                            <label for="title" class="form-label">Title:</label>
+                            <input type="text" class="form-control" id="title" placeholder="Enter title" name="title" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="author" class="form-label">Author:</label>
+                            <input type="text" class="form-control" id="author" placeholder="Enter author name" name="author" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="numberOfPages" class="form-label">Number of pages:</label>
+                            <input type="number" class="form-control" id="numberOfPages" placeholder="Enter number of pages" name="numberOfPages" required>
+                        </div>
+                        <div class="form-check mb-3">
+                            <label class="form-check-label">
+                                <input class="form-check-input" type="checkbox" name="read" id="read"> Read
+                            </label>
+                        </div>
+                        <button type="submit" class="btn btn-outline-primary" id="newBookSubmit">Submit</button>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
     <main id="library" class="row">
 
     </main>

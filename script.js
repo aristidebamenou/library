@@ -1,158 +1,192 @@
 import { faker } from "https://esm.sh/@faker-js/faker@v10.3.0";
 
+const INITIAL_BOOK_COUNT = 10;
+const MAX_PAGES = 800;
+
 function Book(title, author, numberOfPages, read) {
     this.id = crypto.randomUUID();
     this.title = title;
     this.author = author;
-    this.numberOfPages = numberOfPages;
+    this.numberOfPages = parseInt(numberOfPages, 10);
     this.read = read;
+}
 
-    this.toggleRead = function() {
-        this.read = !this.read;
-    }
-
-    this.display = function() {
-        let libraryMain = document.getElementById("library");
-
-        let libraryCol = document.createElement("div");
-        libraryCol.className = "col-md-3 p-2"
-
-        let bookCard = document.createElement("div");
-        bookCard.className = "card book"
-
-        let bookCardBody = document.createElement("div");
-        bookCardBody.className = "card-body";
-
-        let bookCardTitle = document.createElement("h5");
-        bookCardTitle.className = "card-title";
-        bookCardTitle.innerText = this.title;
-
-        let bookCardSubtitle = document.createElement("h6");
-        bookCardSubtitle.className = "card-subtitle mb-2 text-body-secondary";
-        bookCardSubtitle.innerText = `by ${this.author}`;
-
-        let bookCardText = document.createElement("p");
-        bookCardText.className = "card-text";
-        bookCardText.innerText = `${this.numberOfPages} pages`;
-
-        let bookCardFooter = document.createElement("div");
-        bookCardFooter.className = "card-footer text-body-secondary d-flex justify-content-between";
-
-        let readButton = document.createElement("button");
-        readButton.dataset.id = this.id;
-        readButton.className = "btn readBookButton";
-
-        let deleteButton = document.createElement("button");
-        deleteButton.innerText = "Remove";
-        deleteButton.dataset.id = this.id;
-        deleteButton.className = "btn btn-outline-danger removeBookButton";
-
-        bookCardFooter.appendChild(readButton);
-        bookCardFooter.appendChild(deleteButton);
-
-        if(this.read) {
-            bookCard.className = `${bookCard.className} border-primary`;
-            readButton.className = `${readButton.className} btn-outline-primary`;
-            readButton.innerText = "Read"
-        } else {
-            bookCard.className = `${bookCard.className} border-secondary`;
-            readButton.className = `${readButton.className} btn-outline-secondary`;
-            readButton.innerText = "Not read yet"
-        }
-
-        bookCardBody.appendChild(bookCardTitle);
-        bookCardBody.appendChild(bookCardSubtitle);
-        bookCardBody.appendChild(bookCardText);
-        bookCard.appendChild(bookCardBody);
-        bookCard.appendChild(bookCardFooter);
-        libraryCol.appendChild(bookCard);
-        libraryMain.appendChild(libraryCol);
-    }
+Book.prototype.toggleRead = function() {
+    this.read = !this.read;
 }
 
 function Library() {
     this.books = [];
+}
 
-    this.initialize = function() {
-        for (let i = 0; i < 8; i++) {
-            this.addBook(faker.book.title(), faker.book.author(), Math.floor(Math.random() * 800), Math.random() < 0.5)
-        }
-    }
-
-    this.display = function() {
-        for (let i = 0; i < this.books.length; i++) {
-            this.books[i].display();
-        }
-    }
-
-    this.addBook = function(title, author, numberOfPages, read) {
-        let book = new Book(title, author, numberOfPages, read);
-        this.books.push(book);
-    }
-
-    this.findBookIndex = function(bookId) {
-        return this.books.findIndex(book => book.id === bookId);
-    }
-
-    this.refresh = function() {
-
-        let libraryMain = document.getElementById("library");
-        libraryMain.innerHTML = "";
-        this.display();
-    }
-
-    this.deleteBook = function() {
-        document.addEventListener("click", (e) => {
-            if(!e.target.classList.contains("removeBookButton")) {
-                return;
-            }
-            this.books.splice(this.findBookIndex(e.target.dataset.id), 1);
-            this.refresh();
-        });
-    }
-
-    this.toggleBookRead = function() {
-        document.addEventListener("click", (e) => {
-            if(!e.target.classList.contains("readBookButton")) {
-                return;
-            }
-            this.books[this.findBookIndex(e.target.dataset.id)].toggleRead();
-            this.refresh();
-        });
+Library.prototype.initialize = function() {
+    for (let i = 0; i < INITIAL_BOOK_COUNT; i++) {
+        this.addBook(faker.book.title(), faker.book.author(), Math.floor(Math.random() * MAX_PAGES), Math.random() < 0.5);
     }
 }
 
-function cleanFormInputs() {
-    let titleInput = document.getElementById("title");
-    let authorInput = document.getElementById("author");
-    let numberOfPagesInput = document.getElementById("numberOfPages");
-    let readInput = document.getElementById("read");
+Library.prototype.addBook = function(title, author, numberOfPages, read) {
+    const book = new Book(title, author, numberOfPages, read);
+    this.books.push(book);
+}
 
-    titleInput.value = "";
-    authorInput.value = "";
-    numberOfPagesInput.value = "";
-    readInput.checked = false;
+Library.prototype.findBookIndex = function(bookId) {
+    return this.books.findIndex(book => book.id === bookId);
+}
+
+Library.prototype.removeBook = function(bookId) {
+    const index = this.findBookIndex(bookId);
+    if (index < 0) return;
+
+    this.books.splice(index, 1);
+}
+
+Library.prototype.toggleBookRead = function(bookId) {
+    const index = this.findBookIndex(bookId);
+    if (index < 0) return;
+
+    this.books[index].toggleRead();
+}
+
+Library.prototype.forEach = function(callback) {
+    this.books.forEach(book => callback(book));
+}
+
+function LibraryContainerBuilder(libraryContainerId, library) {
+    this.library = library;
+    this.libraryContainer = document.getElementById(libraryContainerId);
+}
+
+LibraryContainerBuilder.prototype.display = function() {
+    this.library.forEach((book) => {
+        const bookCard = new BookCardBuilder(this.libraryContainer, book);
+        bookCard.display();
+    });
+}
+
+LibraryContainerBuilder.prototype.refresh = function() {
+    this.libraryContainer.innerHTML = "";
+    this.display();
+}
+
+LibraryContainerBuilder.prototype.initRemoveListener = function() {
+    document.addEventListener("click", (e) => {
+        if(!e.target.classList.contains("removeBookButton")) return;
+
+        this.library.removeBook(e.target.dataset.id);
+        this.refresh();
+    });
+}
+
+LibraryContainerBuilder.prototype.initToggleReadListener = function() {
+    document.addEventListener("click", (e) => {
+        if(!e.target.classList.contains("readBookButton")) return;
+
+        this.library.toggleBookRead(e.target.dataset.id);
+        this.refresh();
+    });
+}
+
+function BookCardBuilder(libraryContainer, book) {
+    this.book = book;
+
+    this.libraryContainer = libraryContainer;
+
+    this.col = document.createElement("div");
+    this.card = document.createElement("div");
+    this.cardTitle = document.createElement("h5");
+    this.cardSubtitle = document.createElement("h6");
+    this.cardBody = document.createElement("div");
+    this.cardText = document.createElement("p");
+    this.cardFooter = document.createElement("div");
+    this.readButton = document.createElement("button");
+    this.removeButton = document.createElement("button");
+}
+
+BookCardBuilder.prototype.build = function() {
+    this.cardBody.appendChild(this.cardTitle);
+    this.cardBody.appendChild(this.cardSubtitle);
+    this.cardBody.appendChild(this.cardText);
+    this.card.appendChild(this.cardBody);
+    this.cardFooter.appendChild(this.readButton);
+    this.cardFooter.appendChild(this.removeButton);
+    this.card.appendChild(this.cardFooter);
+    this.col.appendChild(this.card);
+    this.libraryContainer.appendChild(this.col);
+}
+
+BookCardBuilder.prototype.addValues = function() {
+    this.cardTitle.textContent = this.book.title;
+    this.cardSubtitle.textContent = `by ${this.book.author}`;
+    this.cardText.textContent = `${this.book.numberOfPages} pages`;
+    this.readButton.dataset.id = this.book.id;
+    this.removeButton.textContent = "Remove";
+    this.removeButton.dataset.id = this.book.id;
+    this.readButton.textContent = this.book.read ? "Read" : "Not read yet";
+}
+
+BookCardBuilder.prototype.stylize = function() {
+    this.col.className = "col-md-3 p-2";
+
+    this.cardSubtitle.className = "card-subtitle mb-2 text-body-secondary";
+    this.card.className = "card book";
+    this.cardTitle.className = "card-title";
+    this.cardBody.className = "card-body";
+    this.cardText.className = "card-text";
+    this.readButton.className = "btn readBookButton";
+    this.removeButton.className = "btn btn-outline-danger removeBookButton";
+    this.cardFooter.className = "card-footer text-body-secondary d-flex justify-content-between";
+
+    if (this.book.read) {
+        this.card.classList.add('border-primary');
+        this.readButton.classList.add('btn-outline-primary');
+    } else {
+        this.card.classList.add('border-secondary');
+        this.readButton.classList.add('btn-outline-secondary');
+    }
+}
+
+BookCardBuilder.prototype.display = function(){
+    this.stylize();
+    this.addValues();
+    this.build();
+}
+
+function FormBuilder(titleInputId, authorInputId, numberOfPagesInputId, readCheckBoxId) {
+    this.titleInput = document.getElementById(titleInputId);
+    this.authorInput = document.getElementById(authorInputId);
+    this.numberOfPagesInput = document.getElementById(numberOfPagesInputId);
+    this.readInput = document.getElementById(readCheckBoxId);
+}
+
+FormBuilder.prototype.clean = function() {
+    this.titleInput.value = "";
+    this.authorInput.value = "";
+    this.numberOfPagesInput.value = "";
+    this.readInput.checked = false;
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    let myLibrary = new Library();
+    const myLibrary = new Library();
+    const libraryContainer = new LibraryContainerBuilder("library", myLibrary);
+    const form = new FormBuilder('title', 'author', 'numberOfPages', 'read');
 
-    let newBookFormClose = document.getElementById("newBookFormClose");
-    let newBookForm = document.getElementById("newBookForm");
+    const newBookFormClose = document.getElementById("newBookFormClose");
+    const newBookForm = document.getElementById("newBookForm");
 
     myLibrary.initialize();
-    myLibrary.refresh();
-    myLibrary.deleteBook();
-    myLibrary.toggleBookRead();
+    libraryContainer.refresh();
+    libraryContainer.initRemoveListener();
+    libraryContainer.initToggleReadListener();
 
     newBookForm.addEventListener("submit", (e) => {
         e.preventDefault();
-        let data = new FormData(newBookForm);
+        const data = new FormData(newBookForm);
 
         myLibrary.addBook(data.get('title'), data.get('author'), data.get('numberOfPages'), data.get('read') === 'on');
         newBookFormClose.click();
-        myLibrary.refresh();
-        cleanFormInputs();
+        libraryContainer.refresh();
+        form.clean();
     });
 });
 
